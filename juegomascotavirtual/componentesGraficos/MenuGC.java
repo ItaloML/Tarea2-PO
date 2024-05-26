@@ -1,4 +1,4 @@
-package com.example.juegomascotavirtual;
+package componentesGraficos;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;

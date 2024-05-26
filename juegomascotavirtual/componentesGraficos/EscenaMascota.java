@@ -1,4 +1,4 @@
-package com.example.juegomascotavirtual;
+package componentesGraficos;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

@@ -1,10 +1,12 @@
-package com.example.juegomascotavirtual;
+package componentesGraficos;
+
+import Permanentes.*;
+import Consumibles.*;
 
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -15,7 +17,6 @@ import java.util.ArrayList;
 
 
 public class InventarioGC extends VBox {
-
     public static ItemPanel Alimentos = new ItemPanel("Alimentos");
     public static ItemPanel Medicinas = new ItemPanel("Medicinas");
     public static VBox Juguetes = new VBox();
@@ -47,22 +48,25 @@ public class InventarioGC extends VBox {
         HBox.setHgrow(panelInventario, javafx.scene.layout.Priority.ALWAYS);
         panelInventario.setSpacing(10);
         panelInventario.setPadding(new Insets(10,10,10,10));
-        panelInventario.setPrefSize(900,780);
+        panelInventario.setPrefWidth(900);
+        panelInventario.setMaxWidth(900);
+        panelInventario.setPrefHeight(150);
+        panelInventario.setMaxHeight(150);
 
         // Los paneles de Alimentos y Medicina son iguales. Se crean con un método dedicado y se añaden sus elementos con otros métodos.
         // Más detalles en la definición de dichos métodos.
 
-        ItemButton alimento1 = new ItemButton(10,"Leche",6);
-        ItemButton alimento2 = new ItemButton(11,"Arroz",2);
-        ItemButton alimento3 = new ItemButton(12,"Carne",3);
+        ItemButton alimento1 = new ItemButton(new Comida("Leche",1, 6));
+        ItemButton alimento2 = new ItemButton(new Comida("Arroz",2, 2));
+        ItemButton alimento3 = new ItemButton(new Comida("Carne",3, 6));
         Alimentos.add(alimento1);
         Alimentos.add(alimento2);
         Alimentos.add(alimento3);
 
 
 
-        ItemButton med1 = new ItemButton(1,"Parecetamol",2);
-        ItemButton med2 = new ItemButton(2,"Jarabe",4);
+        ItemButton med1 = new ItemButton(new Medicina("Parecetamol",4, 5));
+        ItemButton med2 = new ItemButton(new Medicina("Jarabe",5, 8));
         Medicinas.add(med1);
         Medicinas.add(med2);
 
@@ -71,10 +75,7 @@ public class InventarioGC extends VBox {
 
         // Se añaden estos 3 componentes al panel del Inventario y se espedifica su tamaño (que será fijo).
         panelInventario.getChildren().addAll(Alimentos, Medicinas, Juguetes);
-        panelInventario.setPrefWidth(800);
-        panelInventario.setMaxWidth(800);
-        panelInventario.setPrefHeight(150);
-        panelInventario.setMaxHeight(150);
+
 
         // Se añaden los componentes a la main VBox
         this.getChildren().addAll(lineAbove, inventoryTitle, lineBelow, panelInventario);
@@ -85,21 +86,37 @@ public class InventarioGC extends VBox {
     private VBox createToyPanel() {
         VBox tablaJuguetes = new VBox();
         tablaJuguetes.setMaxWidth(300);
-        tablaJuguetes.setMaxHeight(780);
+        tablaJuguetes.setPrefWidth(300);
+        tablaJuguetes.setMaxHeight(150);
+        tablaJuguetes.setPrefHeight(150);
+        tablaJuguetes.setSpacing(10);
         tablaJuguetes.setAlignment(Pos.TOP_CENTER);
-        tablaJuguetes.setSpacing(40);
 
+        // Título
         Label title = new Label("Juguetes");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 15));
         title.setAlignment(Pos.CENTER);
         title.setMaxWidth(Double.MAX_VALUE);
         VBox.setVgrow(title,Priority.NEVER);
 
-        ButtonBar buttons = new ButtonBar();
-        Button toy1 = new Button("Pelota");
-        Button toy2 = new Button("Kong");
+        // Flow Pane de los botones.
+        FlowPane buttons = new FlowPane();
+        buttons.setHgap(10);
+        buttons.setVgap(5);
+        buttons.setPrefSize(300,120);
+        buttons.setAlignment(Pos.CENTER);
 
-        buttons.getButtons().addAll(toy1, toy2);
+
+        Button toy1 = new ToyButton(new Juguete("Pelota", 7, -1));
+
+        Button toy2 = new ToyButton(new Juguete("Kong", 8, -1));
+
+        Button toy3 = new ToyButton(new Juguete("Kong rojo", 9, -1));
+
+        Button toy4 = new ToyButton(new Juguete("Cuerda", 10, -1));
+
+
+        buttons.getChildren().addAll(toy1, toy2, toy3, toy4);
 
         tablaJuguetes.getChildren().addAll(title, buttons);
         return tablaJuguetes;
@@ -173,8 +190,6 @@ class ItemPanel extends VBox {
         Label stockLabel = new Label(Integer.toString(item.getStock()));
         stockLabel.setAlignment(Pos.CENTER);
         stockLabel.setPrefSize(30,40);
-        item.setText(item.getItemName());
-        item.setPrefSize(120,35);
         cell.getChildren().addAll(stockLabel, item);
     }
 
@@ -192,31 +207,39 @@ class ItemPanel extends VBox {
 
 
 
-class ItemButton extends Button {
-    private final int ID;
-    private int stock;
-    private final String itemName;
 
-    ItemButton(int ID, String itemName, int stock) {
-        this.ID = ID;
-        this.stock = stock;
-        this.itemName = itemName;
-        this.setOnAction(_->this.action());
+
+
+
+
+
+abstract class CustomButton extends Button {
+    protected final Item item;
+
+    public CustomButton(Item item) {
+        this.item = item;
+        setText(item.getName());
+        setPrefSize(120,35);
+        this.setOnAction(e->this.action());
     }
-
 
     public int getID() {
-        return ID;
+        return item.getId();
     }
-
     public int getStock() {
-        return stock;
+        return item.getStock();
     }
-
     public String getItemName() {
-        return itemName;
+        return item.getName();
     }
 
+    abstract public void action();
+}
+
+class ItemButton extends CustomButton {
+    ItemButton(Item item) {
+        super(item);
+    }
     public void action() {
         HBox parent = (HBox) this.getParent();
         GridPane grandparent = (GridPane) parent.getParent();
@@ -224,11 +247,20 @@ class ItemButton extends Button {
 
         // Checking if the grandparent is not null
         if (grandgrandparent != null) {
-            stock = stock - 1;
-            if (stock == 0) {grandgrandparent.remove(this);}
+            item.actionItem(Mascota.getInstance());
+            Mascota.printIndicators();
+            if (item.getStock() == 0) {grandgrandparent.remove(this);}
             else {grandgrandparent.add(this);}
         }
     }
 }
 
-
+class ToyButton extends CustomButton {
+    ToyButton(Item item) {
+        super(item);
+    }
+    public void action() {
+        item.actionItem(Mascota.getInstance());
+        Mascota.printIndicators();
+    }
+}

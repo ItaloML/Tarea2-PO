@@ -1,5 +1,6 @@
-package com.example.juegomascotavirtual;
+package componentesGraficos;
 
+import Permanentes.Mascota;
 import javafx.geometry.Pos;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
@@ -14,7 +15,8 @@ public class PanelDeEstado extends VBox {
     private final ProgressBar healthBar = createProgressBar();
     private final ProgressBar energyBar = createProgressBar();
     private final ProgressBar happinessBar = createProgressBar();
-
+    private final Text estado = new Text();
+    private final Text nameText = new Text();
 
     private ProgressBar createProgressBar() {
         ProgressBar pb = new ProgressBar();
@@ -24,7 +26,7 @@ public class PanelDeEstado extends VBox {
 
 
     public PanelDeEstado(String name) {
-        Text nameText = new Text("Nombre:\t\t" + name + "\n\nEdad:\t\t1.50");
+        nameText.setText("Nombre:\t\t" + name + "\n\nEdad:\t\t"+Mascota.getInstance().getAge());
         nameText.setFont(Font.font("Arial", 20));
         datosMascota.getChildren().add(nameText);
         AnchorPane.setTopAnchor(nameText, 10.0);
@@ -52,9 +54,9 @@ public class PanelDeEstado extends VBox {
 
         // Valores hardcodeados para las barras. Luego creo que habría que hacer una "Property"
         // y hacer un binding con los atributos reales de la mascota
-        healthBar.setProgress(0.25F);
-        energyBar.setProgress(0.55F);
-        happinessBar.setProgress(0.80F);
+        healthBar.setProgress(Mascota.getInstance().getHealth()/100.0);
+        energyBar.setProgress(Mascota.getInstance().getEnergy()/100.0);
+        happinessBar.setProgress(Mascota.getInstance().getHappiness()/100.0);
 
         // Añadirlos al VBox de los atributos
         panelAtributos.getChildren().addAll(healthTitle, healthBar, energyTitle, energyBar, happinessTitle, happinessBar);
@@ -66,8 +68,7 @@ public class PanelDeEstado extends VBox {
         estadoMascota.setAlignment(Pos.CENTER);
         Text estadoTitulo = new Text("Estado\n\n\n");
         estadoTitulo.setFont(Font.font("Arial", 24));
-
-        Text estado = new Text("BASADO");
+        estado.setText(Mascota.getInstance().determineState().toString());
         estado.setFont(Font.font("Arial", 48));
         estadoMascota.getChildren().addAll(estadoTitulo, estado);
 
@@ -77,5 +78,13 @@ public class PanelDeEstado extends VBox {
         setPrefWidth(400);
         setSpacing(25);
     }
+        public void setUpdate(){
+            healthBar.setProgress(Mascota.getInstance().getHealth()/100.0);
+            energyBar.setProgress(Mascota.getInstance().getEnergy()/100.0);
+            happinessBar.setProgress(Mascota.getInstance().getHappiness()/100.0);
+            estado.setText(Mascota.getInstance().determineState().toString());
+            nameText.setText("Nombre:\t\t" + Mascota.getInstance().getName() + "\n\nEdad:\t\t"+Mascota.getInstance().getAge());
+        }
+
 
 }

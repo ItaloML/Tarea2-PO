@@ -1,5 +1,3 @@
-package com.example.tarea21;
-
 import Interfaz.EscenaMascota;
 import Interfaz.PanelDeEstado;
 import Interfaz.InventarioGC;
